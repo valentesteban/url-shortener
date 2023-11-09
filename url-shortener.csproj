@@ -8,14 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SqlServer.XEvent.XELite" Version="2023.1.30.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\Implementations\" />
-    <Folder Include="Data\Interfaces\" />
-    <Folder Include="Utilities\" />
+    <PackageReference Include="SQLite" Version="3.13.0" />
+    <PackageReference Include="SQLiteNetExtensions" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
