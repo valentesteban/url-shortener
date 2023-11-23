@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using url_shortener.Models;
 using url_shortener.Models.Repository.Interface;
@@ -11,13 +12,13 @@ public class XYZController : ControllerBase
 {
     private readonly IXYZService _xyzContext;
     private readonly ICategoryService _categoryContext;
-    private readonly APIException _apiException;
+    private readonly ErrorSwitcher _errorSwitcher;
 
-    public XYZController(IXYZService xyzContext, ICategoryService categoryContext, APIException apiException)
+    public XYZController(IXYZService xyzContext, ICategoryService categoryContext, ErrorSwitcher errorSwitcher)
     {
         _xyzContext = xyzContext;
         _categoryContext = categoryContext;
-        _apiException = apiException;
+        _errorSwitcher = errorSwitcher;
     }
 
     [Route("all")]
@@ -27,21 +28,24 @@ public class XYZController : ControllerBase
         return Ok(_xyzContext.GetAll());
     }
 
-    [Route("getLong")]
+    [Route("long")]
     [HttpGet]
     public IActionResult GetUrlLongByShort(string urlShort)
     {
         try
         {
             var urlLongByShort = _xyzContext.getUrlLongByShort(urlShort);
-        
-            return Ok(urlLongByShort);            
-        } 
+
+            return Ok(urlLongByShort);
+        }
         catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
 
@@ -53,17 +57,21 @@ public class XYZController : ControllerBase
         {
             var url = _xyzContext.createUrl(creationDto);
 
-            return Ok(url);   
-        } 
+            return Ok(url);
+        }
         catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
-    
-    [Route("deleteById")]
+
+    [Route("deleteId")]
+    [Authorize(Roles = "admin")]
     [HttpDelete]
     public IActionResult DeleteUrl(int id)
     {
@@ -71,27 +79,36 @@ public class XYZController : ControllerBase
         {
             _xyzContext.deleteUrl(id);
             return Ok("Url " + id + " deleted");
-        }catch (Exception e)
+        }
+        catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
-    
-    [Route("deleteByShort")]
+
+    [Route("deleteShort")]
+    [Authorize(Roles = "admin")]
     [HttpDelete]
     public IActionResult DeleteUrl(string urlShort)
     {
         try
         {
             _xyzContext.deleteUrl(urlShort);
-            return Ok("Url " + urlShort + " deleted");   
-        }catch (Exception e)
+            return Ok("Url " + urlShort + " deleted");
+        }
+        catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
 }

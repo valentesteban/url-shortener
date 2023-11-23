@@ -6,8 +6,8 @@ public interface IXYZService
 {
     public List<XYZ> GetAll();
     public XYZ? getUrlLongByShort(string urlShort);
-    public XYZ getById(int id);
-    public XYZ createUrl(XYZForCreationDTO creationDto);
+    public XYZ? getById(int id);
+    public XYZ? createUrl(XYZForCreationDTO creationDto);
     public bool isUrlShortExist(string urlShort);
     public bool isUrlLongExist(string urlLong);
     public void deleteUrl(int id);

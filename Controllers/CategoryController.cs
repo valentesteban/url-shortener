@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using url_shortener.Models.Repository.Interface;
 using url_shortener.Utilities;
@@ -9,22 +10,22 @@ namespace url_shortener.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _context;
-    private readonly APIException _apiException;
-    
-    public CategoryController(ICategoryService context, APIException apiException)
+    private readonly ErrorSwitcher _errorSwitcher;
+
+    public CategoryController(ICategoryService context, ErrorSwitcher errorSwitcher)
     {
         _context = context;
-        _apiException = apiException;
+        _errorSwitcher = errorSwitcher;
     }
-    
+
     [Route("all")]
     [HttpGet]
     public IActionResult getAll()
     {
         return Ok(_context.getAll());
     }
-    
-    [Route("getById")]
+
+    [Route("id")]
     [HttpGet]
     public IActionResult getById(int id)
     {
@@ -35,13 +36,16 @@ public class CategoryController : ControllerBase
         }
         catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
-    
-    [Route("getByName")]
+
+    [Route("name")]
     [HttpGet]
     public IActionResult getByName(string name)
     {
@@ -52,46 +56,60 @@ public class CategoryController : ControllerBase
         }
         catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
-    
+
     [Route("create")]
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public IActionResult createCategory(string name)
     {
         try
         {
             _context.createCategory(name);
-        
-            return Ok("Category " + name +" created");   
-        } catch (Exception e)
-        {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
 
-            return _apiException.getResultFromError(type, e.Data);
+            return Ok("Category " + name + " created");
+        }
+        catch (Exception e)
+        {
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
+
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
-    
+
     [Route("update")]
+    [Authorize(Roles = "admin")]
     [HttpPut]
     public IActionResult updateCategory(int id, string name)
     {
         try
         {
             _context.updateCategory(id, name);
-            return Ok("Category " + name +" updated");
-        } catch (Exception e)
+            return Ok("Category " + name + " updated");
+        }
+        catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
 
     [Route("delete")]
+    [Authorize(Roles = "admin")]
     [HttpDelete]
     public IActionResult deleteCategory(int id)
     {
@@ -103,9 +121,12 @@ public class CategoryController : ControllerBase
         }
         catch (Exception e)
         {
-            Enum.TryParse(e.Data["type"].ToString(), out APIException.Type type);
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
 
-            return _apiException.getResultFromError(type, e.Data);
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
         }
     }
 }

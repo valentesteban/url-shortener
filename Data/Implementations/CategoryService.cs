@@ -8,39 +8,27 @@ namespace url_shortener.Data.Implementations;
 public class CategoryService : ICategoryService
 {
     private readonly UrlShortenerContext _context;
-    
+
     public CategoryService(UrlShortenerContext context)
     {
         _context = context;
     }
-    
+
     public List<Category> getAll()
     {
         return _context.Categories.ToList();
     }
 
-    public Category getById(int id)
+    public Category? getById(int id)
     {
-       var category = _context.Categories.FirstOrDefault((category) => category.Id == id);
-        
-        if (category == null)
-        {
-            throw APIException.CreateException(APIException.Code.CT_01, "Category not found",
-                APIException.Type.NOT_FOUND);
-        }
+        var category = _context.Categories.FirstOrDefault((category) => category.Id == id);
 
         return category;
     }
-    
+
     public Category? getByName(string name)
     {
         var category = _context.Categories.FirstOrDefault((category) => category.Name.ToLower() == name.ToLower());
-        
-        if (category == null)
-        {
-            throw APIException.CreateException(APIException.Code.CT_01, "Category not found",
-                APIException.Type.NOT_FOUND);
-        }
 
         return category;
     }
@@ -49,18 +37,16 @@ public class CategoryService : ICategoryService
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw APIException.CreateException(APIException.Code.CT_03, "Name is required",
-                APIException.Type.BAD_REQUEST);
+            throw new Exception("BD - Name is required");
         }
-        
-        
+
+
         if (_context.Categories.FirstOrDefault((category => category.Name == name)) != null)
         {
-            throw APIException.CreateException(APIException.Code.CT_02, "Category already exist",
-                APIException.Type.BAD_REQUEST);
+            throw new Exception("BD - Category already exists");
         }
-        
-        
+
+
         var category = new Category
         {
             Name = name.ToLower()
@@ -70,20 +56,18 @@ public class CategoryService : ICategoryService
         {
             _context.Categories.Add(category);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            throw APIException.CreateException(APIException.Code.DB_01, e.Message,
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while setting the data in the database");
         }
-        
+
         try
         {
             _context.SaveChanges();
         }
         catch (Exception e)
         {
-            throw APIException.CreateException(APIException.Code.DB_02, e.Message,
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while saving the data in the database");
         }
     }
 
@@ -91,41 +75,48 @@ public class CategoryService : ICategoryService
     {
         Category? category = getById(id);
 
+        if (category == null)
+        {
+            throw new Exception("BD - Category not found");
+        }
+
         category.Name = name.ToLower();
-            
+
         try
         {
             _context.SaveChanges();
         }
         catch (Exception e)
         {
-            throw APIException.CreateException(APIException.Code.DB_02, e.Message,
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while saving the data in the database");
         }
     }
 
     public void deleteCategory(int id)
     {
         Category? category = getById(id);
-        
+
+        if (category == null)
+        {
+            throw new Exception("BD - Category not found");
+        }
+
         try
         {
             _context.Categories.Remove(category);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            throw APIException.CreateException(APIException.Code.DB_01, e.Message,
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while setting the data in the database");
         }
-        
+
         try
         {
             _context.SaveChanges();
         }
         catch (Exception e)
         {
-            throw APIException.CreateException(APIException.Code.DB_02, e.Message,
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while saving the data in the database");
         }
     }
 }

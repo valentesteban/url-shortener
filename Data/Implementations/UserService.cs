@@ -1,63 +1,46 @@
 ﻿using url_shortener.Entities;
 using url_shortener.Models;
 using url_shortener.Models.Repository.Interface;
-using url_shortener.Utilities;
 
 namespace url_shortener.Data.Implementations;
+
 public class UserService : IUserService
 {
     private readonly UrlShortenerContext _context;
-    
-    public UserService (UrlShortenerContext context)
+
+    public UserService(UrlShortenerContext context)
     {
         _context = context;
     }
-    
+
     public List<User> GetUsers()
     {
         return _context.Users.ToList();
     }
 
-    public User GetUser(int id)
+    public User? GetUser(int id)
     {
         User? user = _context.Users.FirstOrDefault((users) => users.Id == id);
 
-        if (user == null)
-        {
-           throw APIException.CreateException(
-                           APIException.Code.US_01,
-                           "User not found",
-                           APIException.Type.NOT_FOUND);
-        }
-
         return user;
     }
 
-    public User GetUser(string email)
+    public User? GetUser(string email)
     {
         User? user = _context.Users.FirstOrDefault((users) => users.Email == email);
-        if (user == null)
-        {
-            throw APIException.CreateException(
-                APIException.Code.US_01,
-                "User not found",
-                APIException.Type.NOT_FOUND);
-        }
 
         return user;
     }
-    
+
     public void AddUser(UserForCreationDTO userForCreationDto)
     {
         User? userExist = _context.Users.FirstOrDefault((users) => users.Email == userForCreationDto.Email);
+
         if (userExist != null)
         {
-            throw APIException.CreateException(
-                APIException.Code.US_02,
-                "User email already exists",
-                APIException.Type.BAD_REQUEST);
+            throw new Exception("NT - User email already exists");
         }
-        
+
         User user = new()
         {
             Username = userForCreationDto.UserName,
@@ -65,29 +48,23 @@ public class UserService : IUserService
             LastName = userForCreationDto.LastName,
             Email = userForCreationDto.Email,
         };
-        
+
         try
         {
             _context.Users.Add(user);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            throw APIException.CreateException(
-                APIException.Code.DB_01,
-                "An error occurred while setting the data in the database",
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while setting the data in the database");
         }
-        
+
         try
         {
             _context.SaveChanges();
         }
         catch (Exception e)
         {
-            throw APIException.CreateException(
-                APIException.Code.DB_02,
-                "An error occurred while saving the data in the database",
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while saving the data in the database");
         }
     }
 
@@ -102,42 +79,34 @@ public class UserService : IUserService
     public void UpdateUser(UserForUpdateDTO userForUpdateDto)
     {
         User? toChange = GetUser(userForUpdateDto.UserToChangeID);
-        
+
         User? userExist = _context.Users.FirstOrDefault((users) => users.Email == userForUpdateDto.Email);
+
         if (userExist != null)
         {
-            throw APIException.CreateException(
-                APIException.Code.US_02,
-                "User email already exists",
-                APIException.Type.BAD_REQUEST);
+            throw new Exception("NT - User email already exists");
         }
-        
+
         toChange.FirstName = userForUpdateDto.FirstName;
         toChange.LastName = userForUpdateDto.LastName;
         toChange.Email = userForUpdateDto.Email;
 
         try
-        { 
+        {
             _context.Users.Update(toChange);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            throw APIException.CreateException(
-                APIException.Code.DB_01,
-                "An error occurred while setting the data in the database",
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while setting the data in the database");
         }
-        
+
         try
         {
             _context.SaveChanges();
         }
         catch (Exception e)
         {
-            throw APIException.CreateException(
-                APIException.Code.DB_02,
-                "An error occurred while saving the data in the database",
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while saving the data in the database");
         }
     }
 
@@ -146,28 +115,21 @@ public class UserService : IUserService
         User? toRemove = GetUser(userId);
 
         try
-        { 
-
+        {
             _context.Users.Remove(toRemove);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            throw APIException.CreateException(
-                APIException.Code.DB_01,
-                "An error occurred while setting the data in the database",
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while setting the data in the database");
         }
-        
+
         try
         {
             _context.SaveChanges();
         }
         catch (Exception e)
         {
-            throw APIException.CreateException(
-                APIException.Code.DB_02,
-                "An error occurred while saving the data in the database",
-                APIException.Type.INTERNAL_SERVER_ERROR);
+            throw new Exception("IE - An error occurred while saving the data in the database");
         }
     }
 }
