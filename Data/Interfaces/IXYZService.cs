@@ -1,6 +1,7 @@
 using url_shortener.Entities;
+using url_shortener.Models;
 
-namespace url_shortener.Models.Repository.Interface;
+namespace url_shortener.Data.Interfaces;
 
 public interface IXYZService
 {

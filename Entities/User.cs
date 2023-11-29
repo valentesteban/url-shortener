@@ -10,7 +10,8 @@ public class User {
     public String FirstName {get; set;}
     public String LastName {get; set;}
     public String Email {get; set;}
-        
+    public int LimitUrl { get; set; }
+
     [OneToMany(CascadeOperations = CascadeOperation.All)]
     public List<XYZ> Urls { get; set; }
 }

@@ -1,6 +1,6 @@
 using url_shortener.Entities;
 
-namespace url_shortener.Models.Repository.Interface;
+namespace url_shortener.Data.Interfaces;
 
 public interface ICategoryService
 {

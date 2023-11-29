@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using url_shortener.Models.Repository.Interface;
+using url_shortener.Data.Interfaces;
 using url_shortener.Utilities;
 
 namespace url_shortener.Controllers;

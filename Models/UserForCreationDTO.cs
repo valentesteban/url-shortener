@@ -10,4 +10,5 @@ public class UserForCreationDTO
     public String Email { get; set; }
     [Required, RegularExpression("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$")]
     public String Password { get; set; }
+    public int LimitUrl { get; set; }
 }

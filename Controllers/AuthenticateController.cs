@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using url_shortener.Data.Interfaces;
 using url_shortener.Models;
-using url_shortener.Models.Repository.Interface;
 
 namespace url_shortener.Controllers;
 [ApiController]

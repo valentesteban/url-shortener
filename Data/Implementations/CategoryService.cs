@@ -1,7 +1,5 @@
-using url_shortener.Data;
+using url_shortener.Data.Interfaces;
 using url_shortener.Entities;
-using url_shortener.Models.Repository.Interface;
-using url_shortener.Utilities;
 
 namespace url_shortener.Data.Implementations;
 

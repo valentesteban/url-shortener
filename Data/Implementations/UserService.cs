@@ -1,6 +1,6 @@
-﻿using url_shortener.Entities;
+﻿using url_shortener.Data.Interfaces;
+using url_shortener.Entities;
 using url_shortener.Models;
-using url_shortener.Models.Repository.Interface;
 
 namespace url_shortener.Data.Implementations;
 
@@ -74,7 +74,11 @@ public class UserService : IUserService
         List<XYZ> urls = _context.Urls.Where(url => url.UserId == user.Id).ToList();
         return urls;
     }
-
+    
+    public void GetUserLimitUrl(int userId)
+    {
+        // falta todo xd
+    }
 
     public void UpdateUser(UserForUpdateDTO userForUpdateDto)
     {
@@ -130,6 +134,26 @@ public class UserService : IUserService
         catch (Exception e)
         {
             throw new Exception("IE - An error occurred while saving the data in the database");
+        }
+    }
+    
+    public void ResetUserLimitUrl(int userId)
+    {
+        User? toChange = GetUser(userId);
+
+        if (toChange != null)
+        {
+            toChange.LimitUrl = 0;
+
+            try
+            {
+                _context.Users.Update(toChange);
+                _context.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                throw new Exception("IE - An error occurred while setting the data in the database");
+            }
         }
     }
 }

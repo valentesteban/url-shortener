@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using url_shortener.Data.Interfaces;
 using url_shortener.Models;
-using url_shortener.Models.Repository.Interface;
 using url_shortener.Utilities;
 
 namespace url_shortener.Controllers;
@@ -56,7 +56,6 @@ public class XYZController : ControllerBase
         try
         {
             var url = _xyzContext.createUrl(creationDto);
-
             return Ok(url);
         }
         catch (Exception e)
@@ -111,4 +110,6 @@ public class XYZController : ControllerBase
             return _errorSwitcher.getResultFromError(code, msg);
         }
     }
+    
+    
 }

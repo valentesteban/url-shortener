@@ -2,9 +2,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using url_shortener.Data.Interfaces;
 using url_shortener.Entities;
 using url_shortener.Models;
-using url_shortener.Models.Repository.Interface;
 
 namespace url_shortener.Data.Implementations;
 

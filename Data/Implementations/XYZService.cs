@@ -1,6 +1,6 @@
+using url_shortener.Data.Interfaces;
 using url_shortener.Entities;
 using url_shortener.Models;
-using url_shortener.Models.Repository.Interface;
 using url_shortener.Utilities;
 
 namespace url_shortener.Data.Implementations;
@@ -79,7 +79,24 @@ public class XYZService : IXYZService
 
         try
         {
-            _context.Urls.Add(url);
+            var user = _context.Users.FirstOrDefault(user => user.Id == creationDto.UserId);
+            if (user != null)
+            {
+                if (user.LimitUrl > 0)
+                {
+                    _context.Urls.Add(url);
+                    user.LimitUrl--;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("BD - User has no more urls to create");
+                }
+            }
+            else
+            {
+                throw new Exception("BD - User not found");
+            }
         }
         catch (Exception exception)
         {

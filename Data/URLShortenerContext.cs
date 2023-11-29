@@ -26,6 +26,7 @@ public class UrlShortenerContext : DbContext
                 LastName = "Admin",
                 Email = "admin@admin.com",
                 Urls = new List<XYZ>(),
+                LimitUrl = 10
             });
 
         modelBuilder.Entity<Auth>().HasData(

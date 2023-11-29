@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using url_shortener.Data.Interfaces;
 using url_shortener.Entities;
 using url_shortener.Models;
-using url_shortener.Models.Repository.Interface;
 using url_shortener.Utilities;
 
 namespace url_shortener.Controllers;
@@ -88,6 +88,34 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpGet("limit-url/{userId}")]
+    public ActionResult<User> GetUserLimitUrl(int userId)
+    {
+        try
+        {
+            if (_authService.getCurrentUser() == null)
+            {
+                return Unauthorized();
+            }
+
+            if (_authService.getCurrentUser().Id == userId)
+            {
+                // return Ok(_userContext.GetUserLimitUrl(userId));
+            }
+
+            return Unauthorized();
+        }
+        catch (Exception e)
+        {
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
+
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
+        }
+    }
+
     [HttpPost]
     public ActionResult<User> PostUser(UserForCreationDTO userForCreationDto)
     {
@@ -135,6 +163,26 @@ public class UserController : ControllerBase
         {
             _userContext.DeleteUser(userId);
             return Ok("User deleted successfully");
+        }
+        catch (Exception e)
+        {
+            var message = _errorSwitcher.GetErrorFromException(e.Message);
+
+            var code = message.Item1;
+            var msg = message.Item2;
+
+            return _errorSwitcher.getResultFromError(code, msg);
+        }
+    }
+    
+    [HttpPut ("{userId}/reset-url")]
+    [Authorize(Roles = "admin")]
+    public ActionResult<User> ResetUserLimitUrl(int userId)
+    {
+        try
+        {
+            _userContext.ResetUserLimitUrl(userId);
+            return Ok("User updated successfully");
         }
         catch (Exception e)
         {
