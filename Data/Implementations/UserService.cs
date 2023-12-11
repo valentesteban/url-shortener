@@ -1,4 +1,5 @@
-﻿using url_shortener.Data.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using url_shortener.Data.Interfaces;
 using url_shortener.Entities;
 using url_shortener.Models;
 
@@ -47,6 +48,7 @@ public class UserService : IUserService
             FirstName = userForCreationDto.FirstName,
             LastName = userForCreationDto.LastName,
             Email = userForCreationDto.Email,
+            LimitUrl = userForCreationDto.LimitUrl
         };
 
         try
@@ -75,9 +77,25 @@ public class UserService : IUserService
         return urls;
     }
     
-    public void GetUserLimitUrl(int userId)
+    public int GetUserLimitUrl(int userId)
     {
-        // falta todo xd
+        try
+        {
+            User? user = _context.Users.FirstOrDefault((users) => users.Id == userId);
+            if (user != null)
+            {
+                var limitUrl = user.LimitUrl;
+                return limitUrl;
+            }
+            else
+            {
+                throw new Exception("BD - User not found");
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception("IE - An error occurred while getting the data in the database");
+        }
     }
 
     public void UpdateUser(UserForUpdateDTO userForUpdateDto)
@@ -143,7 +161,7 @@ public class UserService : IUserService
 
         if (toChange != null)
         {
-            toChange.LimitUrl = 0;
+            toChange.LimitUrl = 10;
 
             try
             {

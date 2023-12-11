@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using url_shortener.Data.Interfaces;
@@ -31,7 +32,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("urls/{userId}")]
-    public IActionResult getUrls(int userId)
+    public IActionResult GetUserUrls(int userId)
     {
         try
         {
@@ -88,22 +89,18 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("limit-url/{userId}")]
-    public ActionResult<User> GetUserLimitUrl(int userId)
+    [HttpGet("{userId}/limit-url")]
+    public IActionResult GetUserLimitUrl(int userId)
     {
         try
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (_authService.getCurrentUser() == null)
             {
                 return Unauthorized();
             }
-
-            if (_authService.getCurrentUser().Id == userId)
-            {
-                // return Ok(_userContext.GetUserLimitUrl(userId));
-            }
-
-            return Unauthorized();
+            
+            return Ok(_userContext.GetUserLimitUrl(userId));
         }
         catch (Exception e)
         {

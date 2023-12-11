@@ -103,15 +103,6 @@ public class XYZService : IXYZService
             throw new Exception("IE - An error occurred while setting the data in the database");
         }
 
-        try
-        {
-            _context.SaveChanges();
-        }
-        catch (Exception e)
-        {
-            throw new Exception("IE - An error occurred while saving the data in the database");
-        }
-
         return url;
     }
 

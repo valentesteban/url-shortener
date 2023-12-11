@@ -10,7 +10,7 @@ public interface IUserService
     public User? GetUser(String email);
     public void AddUser(UserForCreationDTO userForCreationDto);
     public List<XYZ> GetUrls(int userId);
-    public void GetUserLimitUrl(int userId);
+    public int GetUserLimitUrl(int userId);
     public void UpdateUser(UserForUpdateDTO userForUpdateDto);
     public void DeleteUser(int userId);
     public void ResetUserLimitUrl(int userId);
